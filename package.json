@@ -1,6 +1,6 @@
 {
-  "name": "vscode-spot-check",
-  "displayName": "vscode-spot-check",
+  "name": "spot-check",
+  "displayName": "Spot Check",
   "description": "Spot check extracted features against source material",
   "version": "0.0.1",
   "engines": {
@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vscode-spot-check.spotCheck"
+    "onCommand:spot-check.spotCheck"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -28,18 +28,38 @@
     },
     "commands": [
       {
-        "command": "vscode-spot-check.spotCheck",
+        "command": "spot-check.spotCheck",
         "title": "Spot Check"
+      },
+      {
+        "command": "spot-check.openWithSpotCheck",
+        "title": "Open with Spot Check"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "vscode-spot-check.spotCheck",
+          "command": "spot-check.spotCheck",
           "when": "resourceScheme == file"
+        },
+        {
+          "command": "spot-check.openWithSpotCheck",
+          "when": "resourceScheme == file && resourceFilename =~ /\\.spot-check\\.py$/"
         }
       ]
-    }
+    },
+    "customEditors": [
+      {
+        "viewType": "spot-check.spotCheck",
+        "displayName": "Spot Check",
+        "selector": [
+          {
+            "filenamePattern": "*.spot-check.py"
+          }
+        ],
+        "priority": "option"
+      }
+    ]
   },
   "extensionDependencies": [
     "microsoft.python",
@@ -57,6 +77,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/ejs": "^3.1.1",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "14.x",
@@ -73,6 +94,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
+    "ejs": "^3.1.8",
     "tree-kill": "^1.2.2"
   }
 }

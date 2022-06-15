@@ -11,3 +11,6 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+
+!node_modules/pdfjs-dist/build
+!node_modules/pdfjs-dist/web

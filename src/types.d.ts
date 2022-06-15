@@ -3,4 +3,5 @@ declare type Sample = {
   record: {
     [key: string]: any;
   };
+  pageNumber?: number;
 };

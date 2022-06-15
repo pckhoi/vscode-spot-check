@@ -58,7 +58,7 @@ export default class ScriptHandler {
   /**
    * generateSamples
    */
-  public async generateSamples(): Promise<any[]> {
+  public async generateSamples(): Promise<Sample[]> {
     const result = await execute(
       this.pythonPath,
       this.scriptUri.fsPath,
