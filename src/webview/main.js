@@ -1,6 +1,6 @@
-import { initializeControls, renderControls } from "./control";
-import { renderFeatures } from "./features";
-import { initializePDFViewer, renderPDF, reloadPDF } from "./pdfviewer";
+import { initializeControls, renderControls } from "./control.js";
+import { renderFeatures } from "./features.js";
+import { initializePDFViewer, renderPDF, reloadPDF } from "./pdfviewer.js";
 
 let vscode;
 

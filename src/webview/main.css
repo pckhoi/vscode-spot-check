@@ -1,3 +1,11 @@
+#root {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    align-items: stretch;
+}
+
 #dataPanel {
     display: flex;
     flex-direction: column;
@@ -18,26 +26,27 @@
     justify-content: center;
 }
 
-#controlPanel .previous {
-	background: var(--vscode-button-secondaryBackground);
-	color: var(--vscode-button-secondaryForeground);
+#controlPanel button {
 	border: none;
-	padding: 10px 4px;
-    margin-right: 12px;
+	padding: 4px 10px;
     cursor: pointer;
-}
-
-#controlPanel .next {
-	background: var(--vscode-button-background);
-	color: var(--vscode-button-foreground);
-	border: none;
-	padding: 10px 4px;
-    cursor: pointer;
+    font-size: 10px;
 }
 
 #controlPanel button:disabled {
     opacity: .4;
     cursor: default;
+}
+
+#controlPanel .previous {
+	background: var(--vscode-button-secondaryBackground);
+	color: var(--vscode-button-secondaryForeground);
+    margin-right: 12px;
+}
+
+#controlPanel .next {
+	background: var(--vscode-button-background);
+	color: var(--vscode-button-foreground);
 }
 
 #features {
@@ -66,4 +75,8 @@
     grid-column-start: 2;
     grid-column-end: span 1;
     grid-row-end: span 1;
+}
+
+#pdfViewerWrapper {
+    flex: 1;
 }

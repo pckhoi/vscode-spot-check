@@ -5,20 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; img-src <%= cspSource %> https:; script-src <%= cspSource %>; style-src <%= cspSource %>;"
+      content="default-src <%- cspSource %>; img-src <%- cspSource %> https:; script-src <%- cspSource %>; style-src <%- cspSource %>;"
     />
     <title>Spot Check</title>
 
-    <link rel="resource" type="application/l10n" href="<%= localeUri %>" />
+    <link rel="resource" type="application/l10n" href="<%- localeUri %>" />
     <% scriptPaths.forEach(function(path){ %>
-    <script src="<%= path %>"></script>
+    <script src="<%- path %>"></script>
     <% }); %> <% moduleScriptPaths.forEach(function(path){ %>
-    <script type="module" src="<%= path %>"></script>
+    <script type="module" src="<%- path %>"></script>
     <% }); %> <% stylePaths.forEach(function(path){ %>
-    <link rel="stylesheet" href="<%= path %>" />
+    <link rel="stylesheet" href="<%- path %>" />
     <% }); %>
   </head>
   <body>
-    <%- include('data-panel') %> <%- include('pdf-viewer') %>
+    <div id="root">
+      <%- include('data-panel') %> <%- include('pdf-viewer') %>
+    </div>
   </body>
 </html>

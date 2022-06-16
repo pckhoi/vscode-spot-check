@@ -1,15 +1,17 @@
-export const renderFeatures = (features) => {
+export const renderFeatures = (record) => {
   const container = document.querySelector("#features .container");
   container.innerHTML = "";
-  for (let feat of features) {
-    const label = document.createElement("label");
-    label.classList.add("key");
-    label.textContent = feat.key;
-    container.appendChild(label);
+  if (record) {
+    for (let key in record) {
+      const label = document.createElement("label");
+      label.classList.add("key");
+      label.textContent = key;
+      container.appendChild(label);
 
-    const value = document.createElement("span");
-    value.classList.add("value");
-    value.textContent = feat.value;
-    container.appendChild(value);
+      const value = document.createElement("span");
+      value.classList.add("value");
+      value.textContent = record[key];
+      container.appendChild(value);
+    }
   }
 };

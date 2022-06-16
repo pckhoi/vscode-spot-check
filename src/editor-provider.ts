@@ -108,15 +108,28 @@ export class SpotCheckEditorProvider
     this.webviews.add(document.uri, webviewPanel);
 
     // Setup initial content for the webview
+    const resourceRoot = document.uri.with({
+      path: document.uri.path.replace(/\/[^/]+?\.\w+$/, "/"),
+    });
     webviewPanel.webview.options = {
       enableScripts: true,
+      localResourceRoots: [
+        resourceRoot,
+        vscode.Uri.file(this._context.extensionPath),
+        ...(vscode.workspace.workspaceFolders !== undefined
+          ? vscode.workspace.workspaceFolders.map((d) => d.uri)
+          : []),
+      ],
     };
+
     webviewPanel.webview.html = await this._getHtmlForWebview(
       webviewPanel.webview
     );
 
-    webviewPanel.webview.onDidReceiveMessage((e) =>
-      this._onReceiveMessage(webviewPanel, document, e)
+    webviewPanel.webview.onDidReceiveMessage(
+      (e) => this._onReceiveMessage(webviewPanel, document, e),
+      undefined,
+      this._context.subscriptions
     );
   }
 
@@ -130,7 +143,7 @@ export class SpotCheckEditorProvider
       path.join(this._context.extensionPath, "src", "templates", "webview.ejs"),
       {
         cspSource: webview.cspSource,
-        pdfViewerConfig: {
+        pdfViewerConfig: JSON.stringify({
           cMapUrl: resolveAsUri([
             "src",
             "vendor",
@@ -138,10 +151,10 @@ export class SpotCheckEditorProvider
             "web",
             "cmaps/",
           ]).toString(),
-        },
+        }),
         scriptPaths: [
           ["src", "vendor", "pdfjs", "build", "pdf.js"],
-          ["src", "vendor", "pdfjs", "build", "pdf.min.js"],
+          ["src", "vendor", "pdfjs", "build", "pdf.worker.js"],
           ["src", "vendor", "pdfjs", "web", "viewer.js"],
         ].map(resolveAsUri),
         moduleScriptPaths: [["src", "webview", "main.js"]].map(resolveAsUri),
@@ -162,6 +175,21 @@ export class SpotCheckEditorProvider
     );
   }
 
+  private _showSample(
+    panel: vscode.WebviewPanel,
+    document: SpotCheckDocument,
+    sample: Sample
+  ) {
+    return panel.webview.postMessage({
+      type: "showSample",
+      sampleIndex: document.sampleIndex,
+      ...sample,
+      sourcePath: panel.webview
+        .asWebviewUri(vscode.Uri.file(sample.sourcePath))
+        .toString(),
+    });
+  }
+
   private async _onReceiveMessage(
     panel: vscode.WebviewPanel,
     document: SpotCheckDocument,
@@ -174,20 +202,12 @@ export class SpotCheckEditorProvider
         if (sample === undefined) {
           return;
         }
-        await panel.webview.postMessage({
-          type: "showSample",
-          sampleIndex: document.sampleIndex,
-          ...sample,
-        });
+        await this._showSample(panel, document, sample);
         return;
       case "ready":
       case "nextSample":
         sample = await document.nextSample();
-        await panel.webview.postMessage({
-          type: "showSample",
-          sampleIndex: document.sampleIndex,
-          ...sample,
-        });
+        await this._showSample(panel, document, sample);
         return;
     }
   }

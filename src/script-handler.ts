@@ -26,7 +26,7 @@ export default class ScriptHandler {
     const scriptBasename = basename(scriptUri.fsPath);
     const scriptDir = dirname(scriptUri.fsPath);
     const scriptStats = await vscode.workspace.fs.stat(scriptUri);
-    if (scriptStats.type & vscode.FileType.File) {
+    if (!(scriptStats.type & vscode.FileType.File)) {
       throw new Error(
         `spot check script ${scriptBasename} does not exist in folder ${scriptDir}`
       );

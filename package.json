@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:spot-check.spotCheck"
+    "onCommand:spot-check.openWithSpotCheck"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -28,20 +28,12 @@
     },
     "commands": [
       {
-        "command": "spot-check.spotCheck",
-        "title": "Spot Check"
-      },
-      {
         "command": "spot-check.openWithSpotCheck",
         "title": "Open with Spot Check"
       }
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "spot-check.spotCheck",
-          "when": "resourceScheme == file"
-        },
         {
           "command": "spot-check.openWithSpotCheck",
           "when": "resourceScheme == file && resourceFilename =~ /\\.spot-check\\.py$/"
@@ -61,10 +53,6 @@
       }
     ]
   },
-  "extensionDependencies": [
-    "microsoft.python",
-    "tomoki1207.vscode-pdf"
-  ],
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
