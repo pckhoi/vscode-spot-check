@@ -10,8 +10,8 @@
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "${workspaceFolder}/../extraction/",
-        "${workspaceFolder}/../extraction/minutes/segment/minutes.spot-check.py",
+        "${workspaceFolder}/../PPACT/",
+        "${workspaceFolder}/../PPACT/features",
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],

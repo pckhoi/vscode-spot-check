@@ -39,10 +39,13 @@ class WebviewCollection {
   }
 }
 
+let outputChannel: vscode.OutputChannel;
+
 export class SpotCheckEditorProvider
   implements vscode.CustomReadonlyEditorProvider<SpotCheckDocument>
 {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
+    outputChannel = vscode.window.createOutputChannel("Spot Check");
     vscode.commands.registerCommand("spot-check.openWithSpotCheck", () => {
       const uri = vscode.window.activeTextEditor?.document.uri;
       if (!uri) {
@@ -57,8 +60,11 @@ export class SpotCheckEditorProvider
         SpotCheckEditorProvider.viewType
       );
     });
+    outputChannel.appendLine(
+      `registered "spot-check.openWithSpotCheck" command`
+    );
 
-    return vscode.window.registerCustomEditorProvider(
+    const disposable = vscode.window.registerCustomEditorProvider(
       SpotCheckEditorProvider.viewType,
       new SpotCheckEditorProvider(context),
       {
@@ -71,6 +77,8 @@ export class SpotCheckEditorProvider
         supportsMultipleEditorsPerDocument: false,
       }
     );
+    outputChannel.appendLine(`registered SpotCheckEditorProvider`);
+    return disposable;
   }
 
   private static readonly viewType = "spot-check.spotCheck";
@@ -127,7 +135,14 @@ export class SpotCheckEditorProvider
     );
 
     webviewPanel.webview.onDidReceiveMessage(
-      (e) => this._onReceiveMessage(webviewPanel, document, e),
+      (e) =>
+        this._onReceiveMessage(webviewPanel, document, e).catch((error) => {
+          outputChannel.appendLine(error);
+          webviewPanel.webview.postMessage({
+            type: "error",
+            error: error.toString(),
+          });
+        }),
       undefined,
       this._context.subscriptions
     );
@@ -180,14 +195,16 @@ export class SpotCheckEditorProvider
     document: SpotCheckDocument,
     sample: Sample
   ) {
-    return panel.webview.postMessage({
+    const message = {
       type: "showSample",
       sampleIndex: document.sampleIndex,
       ...sample,
-      sourcePath: panel.webview
+      sourceUri: panel.webview
         .asWebviewUri(vscode.Uri.file(sample.sourcePath))
         .toString(),
-    });
+    };
+    outputChannel.appendLine(`sending message ${JSON.stringify(message)}`);
+    return panel.webview.postMessage(message);
   }
 
   private async _onReceiveMessage(
@@ -196,6 +213,7 @@ export class SpotCheckEditorProvider
     message: any
   ) {
     let sample: Sample | undefined;
+    outputChannel.appendLine(`received message ${JSON.stringify(message)}`);
     switch (message.type) {
       case "prevSample":
         sample = document.prevSample();

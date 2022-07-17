@@ -5,19 +5,16 @@ import { execute } from "./executor";
 export default class ScriptHandler {
   scriptUri: vscode.Uri;
   scriptStats: vscode.FileStat;
-  dataFilesStats: vscode.FileStat[];
   pythonPath: string;
 
   constructor(
     pythonPath: string,
     scriptUri: vscode.Uri,
-    scriptStats: vscode.FileStat,
-    dataFilesStats: vscode.FileStat[]
+    scriptStats: vscode.FileStat
   ) {
     this.scriptUri = scriptUri;
     this.scriptStats = scriptStats;
     this.pythonPath = pythonPath;
-    this.dataFilesStats = dataFilesStats;
   }
 
   public static async fromScriptUri(scriptUri: vscode.Uri) {
@@ -32,38 +29,14 @@ export default class ScriptHandler {
       );
     }
 
-    const result = await execute(pythonPath, scriptUri.fsPath, "dataFiles");
-    const dataFiles = result.trim().split("\n");
-
-    return new ScriptHandler(
-      pythonPath,
-      scriptUri,
-      scriptStats,
-      await Promise.all(
-        dataFiles.map((file) => vscode.workspace.fs.stat(vscode.Uri.file(file)))
-      )
-    );
-  }
-
-  /**
-   * maxModTime
-   */
-  public maxModTime() {
-    return Math.max(
-      this.scriptStats.mtime,
-      ...this.dataFilesStats.map((stats) => stats.mtime)
-    );
+    return new ScriptHandler(pythonPath, scriptUri, scriptStats);
   }
 
   /**
    * generateSamples
    */
   public async generateSamples(): Promise<Sample[]> {
-    const result = await execute(
-      this.pythonPath,
-      this.scriptUri.fsPath,
-      "generate"
-    );
+    const result = await execute(this.pythonPath, this.scriptUri.fsPath);
     return JSON.parse(result);
   }
 }

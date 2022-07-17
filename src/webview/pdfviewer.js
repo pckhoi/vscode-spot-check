@@ -23,7 +23,7 @@ const openPDF = async (docPath, onLoad) => {
 export const renderPDF = async (docPath, pageNumber) => {
   await openPDF(docPath, () => {
     if (pageNumber !== undefined) {
-      PDFViewerApplication.pdfViewer.currentPageNumber = pageNumber;
+      PDFViewerApplication.pdfViewer.currentPageNumber = parseInt(pageNumber);
     }
   });
 };

@@ -11,18 +11,28 @@ window.addEventListener(
     initializeControls(vscode);
     initializePDFViewer();
     window.addEventListener("message", function (event) {
-      const { type, sampleIndex, record, sourcePath, pageNumber } = event.data;
+      const {
+        type,
+        sampleIndex,
+        record,
+        sourcePath,
+        sourceUri,
+        pageNumber,
+        error,
+      } = event.data;
       switch (type) {
         case "showSample":
-          renderControls(sampleIndex);
+          renderControls(sourcePath, sampleIndex);
           renderFeatures(record);
-          renderPDF(sourcePath, pageNumber);
+          renderPDF(sourceUri, pageNumber);
           break;
         case "reload":
-          renderControls(sampleIndex);
+          renderControls(sourcePath, sampleIndex);
           renderFeatures(record);
-          reloadPDF(sourcePath);
+          reloadPDF(sourceUri);
           break;
+        case "error":
+          throw new Error(error);
         default:
           throw new Error(`unrecognized message type ${type}`);
       }
@@ -34,9 +44,12 @@ window.addEventListener(
   { once: true }
 );
 
-window.onerror = function () {
-  const msg = document.createElement("body");
-  msg.innerText =
-    "An error occurred while loading the file. Please open it again.";
-  document.body = msg;
+window.onerror = function (error) {
+  const elem = document.createElement("body");
+  const errorContainer = document.createElement("pre");
+  errorContainer.classList.add("error-container");
+  errorContainer.innerText =
+    "An error occurred while loading the file.\n\n" + error;
+  elem.appendChild(errorContainer);
+  document.body = elem;
 };

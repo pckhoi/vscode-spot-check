@@ -11,7 +11,8 @@ export const initializeControls = (vscode) => {
   };
 };
 
-export const renderControls = (currentPage) => {
+export const renderControls = (sourcePath, currentPage) => {
+  document.querySelector("#sourcePath").innerText = sourcePath;
   if (currentPage === 0) {
     document
       .querySelector("#controlPanel .previous")

@@ -8,7 +8,7 @@ export const renderFeatures = (record) => {
       label.textContent = key;
       container.appendChild(label);
 
-      const value = document.createElement("span");
+      const value = document.createElement("pre");
       value.classList.add("value");
       value.textContent = record[key];
       container.appendChild(value);
