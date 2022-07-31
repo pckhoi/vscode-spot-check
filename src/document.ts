@@ -9,26 +9,34 @@ export class SpotCheckDocument
 {
   static async create(
     uri: vscode.Uri,
-    backupId: string | undefined
+    outputChannel: vscode.OutputChannel,
+    backupId?: string
   ): Promise<SpotCheckDocument | PromiseLike<SpotCheckDocument>> {
     // If we have a backup, read that. Otherwise read the resource from the workspace
     const dataFile =
       typeof backupId === "string" ? vscode.Uri.parse(backupId) : uri;
-    const sh = await ScriptHandler.fromScriptUri(dataFile);
-    return new SpotCheckDocument(uri, sh);
+    const sh = await ScriptHandler.fromScriptUri(dataFile, outputChannel);
+    return new SpotCheckDocument(uri, sh, outputChannel);
   }
 
   private readonly _uri: vscode.Uri;
 
   private _scriptHandler: ScriptHandler;
 
+  private _outputChannel: vscode.OutputChannel;
+
   private _samples: Sample[];
 
   private _sampleIndex: number;
 
-  private constructor(uri: vscode.Uri, scriptHandler: ScriptHandler) {
+  private constructor(
+    uri: vscode.Uri,
+    scriptHandler: ScriptHandler,
+    outputChannel: vscode.OutputChannel
+  ) {
     super();
     this._uri = uri;
+    this._outputChannel = outputChannel;
     this._scriptHandler = scriptHandler;
     this._samples = [];
     this._sampleIndex = -1;
@@ -38,7 +46,7 @@ export class SpotCheckDocument
     return this._uri;
   }
 
-  public async nextSample(): Promise<Sample> {
+  public async nextSample(): Promise<Sample | undefined> {
     if (this._sampleIndex >= this._samples.length - 1) {
       const samples = await this._scriptHandler.generateSamples();
       this._samples = [...this._samples, ...samples];

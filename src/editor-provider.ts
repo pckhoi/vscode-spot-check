@@ -97,6 +97,7 @@ export class SpotCheckEditorProvider
   ): Promise<SpotCheckDocument> {
     const document: SpotCheckDocument = await SpotCheckDocument.create(
       uri,
+      outputChannel,
       openContext.backupId
     );
 
@@ -137,15 +138,16 @@ export class SpotCheckEditorProvider
     webviewPanel.webview.onDidReceiveMessage(
       (e) =>
         this._onReceiveMessage(webviewPanel, document, e).catch((error) => {
-          outputChannel.appendLine(error);
-          webviewPanel.webview.postMessage({
-            type: "error",
-            error: error.toString(),
-          });
+          outputChannel.appendLine(`error while processing message: ${error}`);
+          this._reportError(webviewPanel, error.toString());
         }),
       undefined,
       this._context.subscriptions
     );
+  }
+
+  private _reportError(panel: vscode.WebviewPanel, error: string) {
+    return panel.webview.postMessage({ type: "error", error });
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
@@ -225,7 +227,11 @@ export class SpotCheckEditorProvider
       case "ready":
       case "nextSample":
         sample = await document.nextSample();
-        await this._showSample(panel, document, sample);
+        if (sample === undefined) {
+          await this._reportError(panel, "spot check script returns no sample");
+        } else {
+          await this._showSample(panel, document, sample);
+        }
         return;
     }
   }

@@ -4,20 +4,23 @@ import { execute } from "./executor";
 
 export default class ScriptHandler {
   scriptUri: vscode.Uri;
-  scriptStats: vscode.FileStat;
   pythonPath: string;
+  outputChannel: vscode.OutputChannel;
 
   constructor(
     pythonPath: string,
     scriptUri: vscode.Uri,
-    scriptStats: vscode.FileStat
+    outputChannel: vscode.OutputChannel
   ) {
     this.scriptUri = scriptUri;
-    this.scriptStats = scriptStats;
     this.pythonPath = pythonPath;
+    this.outputChannel = outputChannel;
   }
 
-  public static async fromScriptUri(scriptUri: vscode.Uri) {
+  public static async fromScriptUri(
+    scriptUri: vscode.Uri,
+    outputChannel: vscode.OutputChannel
+  ) {
     const conf = vscode.workspace.getConfiguration("spot-check");
     const pythonPath = conf.get("pythonInterpreterPath") as string;
     const scriptBasename = basename(scriptUri.fsPath);
@@ -29,14 +32,28 @@ export default class ScriptHandler {
       );
     }
 
-    return new ScriptHandler(pythonPath, scriptUri, scriptStats);
+    return new ScriptHandler(pythonPath, scriptUri, outputChannel);
   }
 
   /**
    * generateSamples
    */
   public async generateSamples(): Promise<Sample[]> {
-    const result = await execute(this.pythonPath, this.scriptUri.fsPath);
-    return JSON.parse(result);
+    const result = await execute(
+      this.pythonPath,
+      this.scriptUri.fsPath,
+      "printSamples"
+    );
+    try {
+      return JSON.parse(result);
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        throw new Error(
+          `${err.message}\ndid you call vscodeSpotCheck.printSamples?`
+        );
+      } else {
+        throw err;
+      }
+    }
   }
 }

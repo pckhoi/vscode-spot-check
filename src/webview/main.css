@@ -1,128 +1,129 @@
 body {
-    overflow: hidden;
-    padding: 0;
+  overflow: hidden;
+  padding: 0;
 }
 
 #root {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    align-items: stretch;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  align-items: stretch;
 }
 
 #dataPanel {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    max-width: 600px;
-    background-color: var(--vscode-editor-background);
-    font-family: var(--vscode-editor-font-family);
-    font-size: var(--vscode-editor-font-size);
-    font-weight: var(--vscode-editor-font-weight);
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  max-width: 600px;
+  background-color: var(--vscode-editor-background);
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size);
+  font-weight: var(--vscode-editor-font-weight);
 }
 
 #controlPanel {
-    height: 32px;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
+  height: 32px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 #controlPanel button {
-	border: none;
-	padding: 4px 10px;
-    cursor: pointer;
-    font-family: var(--vscode-font-family);
-    font-size: var(--vscode-font-size);
-    font-weight: var(--vscode-font-weight);
+  border: none;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: var(--vscode-font-weight);
 }
 
 #controlPanel button:disabled {
-    opacity: .4;
-    cursor: default;
+  opacity: 0.4;
+  cursor: default;
 }
 
 #controlPanel .previous {
-	background: var(--vscode-button-secondaryBackground);
-	color: var(--vscode-button-secondaryForeground);
-    margin-right: 12px;
+  background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  margin-right: 12px;
 }
 
 #controlPanel .next {
-	background: var(--vscode-button-background);
-	color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
 }
 
 #features {
-    flex: 1;
-    width: 100%;
-    overflow-y: scroll;
-    padding: 16px;
-    box-sizing: border-box;
-    font-family: var(--vscode-font-family);
-    font-size: var(--vscode-font-size);
-    font-weight: var(--vscode-font-weight);
+  flex: 1;
+  width: 100%;
+  overflow-y: scroll;
+  padding: 16px;
+  box-sizing: border-box;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: var(--vscode-font-weight);
 }
 
 #features .container {
-    display: grid;
-    grid-template-columns: 100px auto;
-    grid-template-rows: auto;
-    column-gap: 12px;
-    row-gap: 12px;
+  display: grid;
+  grid-template-columns: 100px auto;
+  grid-template-rows: auto;
+  column-gap: 12px;
+  row-gap: 12px;
 }
 
 #features .key {
-    grid-column-start: 1;
-    grid-column-end: span 1;
-    grid-row-end: span 1;
-    color: var(--vscode-keybindingLabel-foreground);
+  grid-column-start: 1;
+  grid-column-end: span 1;
+  grid-row-end: span 1;
+  color: var(--vscode-keybindingLabel-foreground);
+  word-break: break-all;
 }
 
 #features .value {
-    grid-column-start: 2;
-    grid-column-end: span 1;
-    grid-row-end: span 1;
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  grid-row-end: span 1;
 }
 
 #pdfViewerPanel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 #sourcePath {
-    padding: 0 0 12px 0;
-    word-break: break-all;
-    box-sizing: border-box;
-    flex-basis: content;
-    flex-shrink: 0;
-    color: var(--vscode-descriptionForeground);
-    background-color: var(--vscode-editor-background);
-    font-family: var(--vscode-font-family);
-    font-size: var(--vscode-font-size);
-    font-weight: var(--vscode-font-weight);
+  padding: 0 0 12px 0;
+  word-break: break-all;
+  box-sizing: border-box;
+  flex-basis: content;
+  flex-shrink: 0;
+  color: var(--vscode-descriptionForeground);
+  background-color: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: var(--vscode-font-weight);
 }
 
 #pdfViewerWrapper {
-    flex: 1;
+  flex: 1;
 }
 
 .error-container {
-	padding: 10px;
-    color: var(--vscode-editorError-foreground);
-    background-color: var(--vscode-editorError-background);
-    white-space: pre-wrap;       /* css-3 */
-    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    white-space: -pre-wrap;      /* Opera 4-6 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
-    font-family: var(--vscode-editor-font-family);
-    font-size: var(--vscode-editor-font-size);
-    font-weight: var(--vscode-editor-font-weight);
+  padding: 10px;
+  color: var(--vscode-editorError-foreground);
+  background-color: var(--vscode-editorError-background);
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size);
+  font-weight: var(--vscode-editor-font-weight);
 }

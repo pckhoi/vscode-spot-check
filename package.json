@@ -36,7 +36,7 @@
       "commandPalette": [
         {
           "command": "spot-check.openWithSpotCheck",
-          "when": "resourceScheme == file && resourceFilename =~ /\\.spot-check\\.py$/"
+          "when": "resourceScheme == file && editorLangId == python"
         }
       ]
     },
@@ -46,7 +46,7 @@
         "displayName": "Spot Check",
         "selector": [
           {
-            "filenamePattern": "*.spot-check.py"
+            "filenamePattern": "*.py"
           }
         ],
         "priority": "option"

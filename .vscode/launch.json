@@ -11,7 +11,7 @@
       "request": "launch",
       "args": [
         "${workspaceFolder}/../PPACT/",
-        "${workspaceFolder}/../PPACT/features",
+        "${workspaceFolder}/../extraction/",
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
