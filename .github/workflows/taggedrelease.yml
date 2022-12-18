@@ -1,0 +1,43 @@
+---
+name: "tagged-release"
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-3.8-pip-${{ hashFiles('pysrc/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-3.8-pip-
+            ${{ runner.os }}-3.8-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r pysrc/requirements.txt
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade build twine
+      - name: Build and publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          python -m build pysrc
+          python -m twine upload pysrc/dist/*

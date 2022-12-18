@@ -1,20 +1,30 @@
-import * as vscode from "vscode";
 import { basename, dirname } from "node:path";
-import { execute } from "./executor";
+import { exec as unpromiseExec, ExecOptions } from "node:child_process";
+import { promisify } from "node:util";
+
+import * as vscode from "vscode";
+
+const exec = promisify(unpromiseExec);
 
 export default class ScriptHandler {
   scriptUri: vscode.Uri;
-  pythonPath: string;
+  pythonInterpreter: string;
+  pythonPaths: string[];
   outputChannel: vscode.OutputChannel;
+  cwd?: string;
 
   constructor(
-    pythonPath: string,
+    pythonInterpreter: string,
+    pythonPaths: string[],
     scriptUri: vscode.Uri,
-    outputChannel: vscode.OutputChannel
+    outputChannel: vscode.OutputChannel,
+    cwd?: string
   ) {
     this.scriptUri = scriptUri;
-    this.pythonPath = pythonPath;
+    this.pythonInterpreter = pythonInterpreter;
+    this.pythonPaths = pythonPaths;
     this.outputChannel = outputChannel;
+    this.cwd = cwd ? cwd : undefined;
   }
 
   public static async fromScriptUri(
@@ -22,7 +32,9 @@ export default class ScriptHandler {
     outputChannel: vscode.OutputChannel
   ) {
     const conf = vscode.workspace.getConfiguration("spot-check");
-    const pythonPath = conf.get("pythonInterpreterPath") as string;
+    const pythonInterpreter = conf.get("pythonInterpreterPath") as string;
+    const pythonPaths = conf.get("pythonPaths") as string[];
+    const cwd = conf.get<string>("cwd");
     const scriptBasename = basename(scriptUri.fsPath);
     const scriptDir = dirname(scriptUri.fsPath);
     const scriptStats = await vscode.workspace.fs.stat(scriptUri);
@@ -32,20 +44,53 @@ export default class ScriptHandler {
       );
     }
 
-    return new ScriptHandler(pythonPath, scriptUri, outputChannel);
+    return new ScriptHandler(
+      pythonInterpreter,
+      pythonPaths,
+      scriptUri,
+      outputChannel,
+      cwd
+    );
   }
 
   /**
    * generateSamples
    */
   public async generateSamples(): Promise<Sample[]> {
-    const result = await execute(
-      this.pythonPath,
-      this.scriptUri.fsPath,
-      "printSamples"
+    const options: {
+      encoding: "buffer" | null;
+    } & ExecOptions = {
+      encoding: "buffer",
+    };
+    let workspaceFolder = "";
+    for (let wf of vscode.workspace.workspaceFolders || []) {
+      if (this.scriptUri.fsPath.startsWith(wf.uri.fsPath)) {
+        workspaceFolder = wf.uri.fsPath;
+      }
+    }
+    if (this.pythonPaths && this.pythonPaths.length > 0) {
+      options.env = {
+        PYTHONPATH: this.pythonPaths
+          .map((s) =>
+            workspaceFolder
+              ? s.replace("${workspaceFolder}", workspaceFolder)
+              : s
+          )
+          .join(":"),
+      };
+      this.outputChannel.appendLine(`env: ${JSON.stringify(options.env)}`);
+    }
+    if (this.cwd) {
+      options.cwd = workspaceFolder
+        ? this.cwd.replace("${workspaceFolder}", workspaceFolder)
+        : this.cwd;
+    }
+    const { stdout } = await exec(
+      `${this.pythonInterpreter} ${this.scriptUri.fsPath} printSamples`,
+      options
     );
     try {
-      return JSON.parse(result);
+      return JSON.parse(stdout.toString());
     } catch (err) {
       if (err instanceof SyntaxError) {
         throw new Error(

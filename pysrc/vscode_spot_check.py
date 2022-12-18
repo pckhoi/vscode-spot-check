@@ -1,9 +1,22 @@
+from datetime import datetime
 import sys
 import random
 import json
 from typing import Callable, Union
 
 import pandas as pd
+
+
+def _serialize_value(v):
+    if isinstance(v, pd.Series):
+        raise ValueError("unexpected record value %s" % v)
+    if type(v) is list:
+        return json.dumps(v, indent=2)
+    if pd.isna(v):
+        return None
+    if isinstance(v, datetime):
+        return v.strftime("%Y-%m-%d")
+    return v
 
 
 def print_samples(
@@ -31,7 +44,7 @@ def print_samples(
             number of samples to produce with each incantation
         sort (bool):
             sort the samples according to the original row order
-        exit (bool):
+        exit_on_success (bool):
             exit the program when this function print samples successfully
 
     Returns:
@@ -84,8 +97,7 @@ def print_samples(
                         if resolve_pageno is None
                         else resolve_pageno(row),
                         "record": {
-                            k: v if pd.notna(v) else None
-                            for k, v in row.to_dict().items()
+                            k: _serialize_value(v) for k, v in row.to_dict().items()
                         },
                     }
                     for _, row in data.iloc[indices].iterrows()

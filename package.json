@@ -12,6 +12,11 @@
   "activationEvents": [
     "onCommand:spot-check.openWithSpotCheck"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pckhoi/vscode-spot-check.git"
+  },
+  "publisher": "pckhoi",
   "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
@@ -20,7 +25,21 @@
       "properties": {
         "spot-check.pythonInterpreterPath": {
           "default": "python",
-          "description": "Path to Python to use.",
+          "description": "Path to Python interpreter",
+          "scope": "machine-overridable",
+          "type": "string"
+        },
+        "spot-check.pythonPaths": {
+          "description": "Python paths, concatenated into PYTHONPATH during script execution. For each path, variable 'workspaceFolder' can be substituted.",
+          "scope": "machine-overridable",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "spot-check.cwd": {
+          "description": "Current working directory during Python script execution. Variable 'workspaceFolder' can be substituted.",
           "scope": "machine-overridable",
           "type": "string"
         }

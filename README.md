@@ -1,71 +1,68 @@
-# vscode-spot-check README
+# spot-check README
 
-This is the README for your extension "vscode-spot-check". After writing up a brief description, we recommend including the following sections.
+This extension allows you to spot-check extracted data versus source PDFs. It is very useful when developing an OCR/document analysis pipeline using Python/Pandas. It does so by providing a custom editor that shows a record on the left half and a PDF on the right half.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- Take random samples from a Python script and show them on a custom editor:
 
-For example if there is an image subfolder under your extension project workspace:
+![editor](images/editor.png)
 
-\!\[feature X\]\(images/feature-x.png\)
+## How to use
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+1. Install this extension
+2. Install Python library `vscode-spot-check`:
+
+   ```bash
+   pip install vscode-spot-check
+   ```
+
+3. Add these lines to your Python script:
+
+   ```python
+   from vscode_spot_check import print_samples
+   ...
+   if __name__ == '__main__':
+       dataframe = do_your_processing()
+       print_samples(
+           dataframe,
+           resolve_source_path=lambda row: row.filepath,
+           resolve_pageno=lambda row: row.pageno,
+       )
+       ...
+   ```
+
+4. Run the command `Open with Spot Check` while your Python script is opened.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Python >= 3.8
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-- `myExtension.enable`: enable/disable this extension
-- `myExtension.thing`: set to `blah` to do something
+- `spot-check.pythonInterpreterPath`: path to the Python interpreter this extension uses to run your Python script. Defaults to `python`.
+- `spot-check.pythonPaths`: array of paths to add to `PYTHONPATH` during script execution. For any path, you can substitute the variable `workspaceFolder`.
+- `spot-check.cwd`: current working directory during script execution. You can also substitute the variable `workspaceFolder` here.
 
-## Known Issues
+## Python library reference
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+### `print_samples`
+
+Print random samples from a dataframe. This function only works if the first shell argument to the script is "printSamples" (which is how the extension invokes this script), so you don't need to comment and then uncomment this function when running the script for a different purpose.
+
+Arguments:
+
+- **data** (pandas.DataFrame): the data to sample
+- **resolve_source_path** (func(pandas.Series) -> str): given a row from the data, this function must return the absolute path to source PDF file
+- **resolve_pageno** (pandas.Series) -> int): optional. Given a row from the data, this function must return the page number of the PDF.
+- **number_of_samples** (int): number of samples to produce with each incantation. Defaults to 100.
+- **sort** (bool): sort the samples according to the original row order. Defaults to True.
+- **exit_on_success** (bool): exit the script after this function prints samples successfully. It prevents any code that comes after this function from running to reduce side effects. Defaults to True.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-- Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-- Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release
