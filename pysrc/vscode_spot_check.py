@@ -10,7 +10,7 @@ import pandas as pd
 def _serialize_value(v):
     if isinstance(v, pd.Series):
         raise ValueError("unexpected record value %s" % v)
-    if type(v) is list:
+    if type(v) is list or type(v) is dict:
         return json.dumps(v, indent=2)
     if pd.isna(v):
         return None
